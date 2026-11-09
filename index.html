@@ -92,6 +92,68 @@ animation:appear .6s ease;
 <p>Transforme seus sentimentos em uma surpresa especial.</p>
 </section>
 
+<section class="plans" id="plans">
+  <h2 style="text-align:center">Escolha sua surpresa ❤️</h2>
+  <p style="text-align:center">Temos uma opção especial para cada história de amor.</p>
+
+  <div class="plan-grid">
+    <div class="plan-card">
+      <div style="font-size:38px">🌷</div>
+      <h2>Simples</h2>
+      <div class="plan-price">R$ 9,90</div>
+      <p>Uma declaração bonita e inesquecível.</p>
+      <ul>
+        <li>Capa romântica</li>
+        <li>Declaração personalizada</li>
+        <li>Mensagem final</li>
+        <li>Link exclusivo</li>
+      </ul>
+      <button type="button" onclick="choosePlan('simples')">Escolher Simples</button>
+    </div>
+
+    <div class="plan-card featured">
+      <div style="font-size:38px">💕</div>
+      <h2>Especial</h2>
+      <div class="plan-price">R$ 14,90</div>
+      <p>Uma surpresa cheia de carinho e emoção.</p>
+      <ul>
+        <li>Tudo do Simples</li>
+        <li>Fotos personalizadas</li>
+        <li>Música especial</li>
+        <li>Quatro etapas interativas</li>
+        <li>Animações românticas</li>
+      </ul>
+      <button type="button" onclick="choosePlan('especial')">Escolher Especial</button>
+    </div>
+
+    <div class="plan-card">
+      <div style="font-size:38px">👑</div>
+      <h2>Premium</h2>
+      <div class="plan-price">R$ 24,90</div>
+      <p>Uma experiência ainda mais completa.</p>
+      <ul>
+        <li>Tudo do Especial</li>
+        <li>Galeria de fotos</li>
+        <li>Contador de relacionamento</li>
+        <li>Mais páginas e mensagens</li>
+        <li>Efeitos exclusivos</li>
+      </ul>
+      <button type="button" onclick="choosePlan('premium')">Escolher Premium</button>
+    </div>
+  </div>
+</section>
+
+<style>
+.plans{margin:20px 0 35px}
+.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.plan-card{background:white;border:1px solid #f0dce3;border-radius:18px;padding:22px;text-align:center}
+.plan-card.featured{border:2px solid #e85d86;box-shadow:0 8px 25px #e85d8625}
+.plan-price{font:30px Georgia;color:#a34265;margin:15px}
+.plan-card ul{text-align:left;line-height:2;padding-left:20px}
+.plan-card button{width:100%;margin:10px 0}
+@media(max-width:700px){.plan-grid{grid-template-columns:1fr}}
+</style>
+  
 <div class="grid">
 <section class="card" id="formCard">
 <h2>Monte sua surpresa</h2>
