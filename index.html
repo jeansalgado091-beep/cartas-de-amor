@@ -304,10 +304,10 @@ setStatus('Toque e segure no link para copiá-lo.');
 $('open').onclick=()=>{
 window.open($('link').href,'_blank');
 };
-
 async function loadSharedLetter(code){
-document.querySelector('main').innerHTML=
-'<section class="card"><h2>Abrindo sua carta... 💌</h2></section>';
+const main=document.querySelector('main');
+
+main.innerHTML='<div style="text-align:center;padding:50px">Preparando sua surpresa... ❤️</div>';
 
 try{
 const response=await fetch(SUPABASE_URL+'/rest/v1/rpc/buscar_carta',{
@@ -322,44 +322,122 @@ body:JSON.stringify({p_codigo:code})
 
 const data=await response.json();
 
-if(!response.ok){
-throw new Error(data.message||'Não foi possível abrir a carta.');
-}
+if(!response.ok) throw new Error(data.message||'Erro ao abrir carta.');
 
 const c=Array.isArray(data)?data[0]:null;
-
-if(!c){
-throw new Error('Não encontramos uma carta com esse link.');
-}
+if(!c) throw new Error('Esta carta não foi encontrada.');
 
 const safe=v=>String(v||'').replace(/[&<>"']/g,ch=>({
 '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
 }[ch]));
 
-const bg=c.tema==='night'?
-'linear-gradient(145deg,#30233e,#59415e)':
-c.tema==='bear'?
-'linear-gradient(145deg,#fff0d9,#f9dfc4)':
-'linear-gradient(145deg,#ffe7ef,#fff8fa)';
+const titulo=safe(c.titulo||'Uma surpresa para você');
+const nome=safe(c.destinatario||'Meu amor');
+const remetente=safe(c.remetente||'Alguém especial');
+const mensagem=safe(c.declaracao||'').replace(/\n/g,'<br>');
+const assinatura=safe(c.assinatura||remetente);
+const foto=c.foto_url?`<img class="foto" src="${safe(c.foto_url)}" alt="Nossa foto">`:'';
 
-document.querySelector('main').innerHTML=`
-<section class="preview" style="max-width:760px;margin:30px auto;background:${bg}">
-<div class="note">Uma mensagem especial ❤️</div>
-<h3>${safe(c.titulo||'Uma surpresa para você')}</h3>
-<div class="note">Para ${safe(c.destinatario)} · Com carinho, ${safe(c.remetente)}</div>
-${c.foto_url?`<img src="${safe(c.foto_url)}" alt="Foto" style="max-width:100%;max-height:320px;border-radius:14px;margin:18px auto">`:''}
-<p>${safe(c.declaracao).replace(/\n/g,'<br>')}</p>
-${c.assinatura?`<div class="signature">${safe(c.assinatura)}</div>`:''}
-${c.musica_url?`<p><a href="${safe(c.musica_url)}" target="_blank" rel="noopener">🎵 Ouvir a música</a></p>`:''}
-<p class="note">Feito com carinho · Cartas de Amor</p>
-</section>`;
+let musica='';
+const musicUrl=String(c.musica_url||'').trim();
+
+if(musicUrl){
+let video='';
+const yt=musicUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+const spotify=musicUrl.match(/open\.spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/);
+
+if(yt){
+video=`<iframe class="player" src="https://www.youtube-nocookie.com/embed/${yt[1]}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+}else if(spotify){
+video=`<iframe class="player" src="https://open.spotify.com/embed/${spotify[1]}/${spotify[2]}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+}else{
+video=`<a class="musiclink" href="${safe(musicUrl)}" target="_blank" rel="noopener">🎵 Abrir música</a>`;
+}
+musica=video;
+}
+
+const style=document.createElement('style');
+style.textContent=`
+.surprise{min-height:85vh;padding:22px 14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#ffe4ed,#fff8fa);font-family:Georgia,serif;color:#71334c}
+.surprise-card{width:100%;max-width:540px;background:#fffafc;border:1px solid #f5cfdb;border-radius:25px;padding:28px 20px;text-align:center;box-shadow:0 12px 35px #a94b6820;animation:appear .5s ease}
+.surprise h2{font-size:29px;color:#a83f65;margin:12px 0}
+.surprise p{font-size:18px;line-height:1.8}
+.surprise .bear{font-size:65px;margin:10px}
+.surprise .heart{font-size:38px}
+.surprise .foto{width:100%;max-height:320px;object-fit:cover;border-radius:18px;margin:15px 0}
+.surprise .musiclink,.surprise button{display:inline-block;border:0;border-radius:30px;padding:13px 22px;margin:9px 5px;background:#b84970;color:white;text-decoration:none;font-size:16px;cursor:pointer}
+.surprise .player{width:100%;height:160px;border:0;border-radius:14px;margin:15px 0}
+.surprise .letter{background:#fff;border-radius:18px;padding:20px;text-align:left;white-space:normal}
+.surprise .signature{font-size:22px;font-style:italic;margin-top:22px;color:#a83f65}
+.surprise .step{display:none}
+.surprise .step.active{display:block}
+.surprise .small{font-size:13px;color:#9b7584}
+@keyframes appear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+`;
+document.head.appendChild(style);
+
+main.innerHTML=`
+<div class="surprise">
+<div class="surprise-card">
+<section class="step active">
+<div class="bear">🧸💕🧸</div>
+<div class="heart">💌</div>
+<h2>Oi, ${nome}!</h2>
+<p>Preparei uma surpresa muito especial para você...</p>
+<p class="small">Feita com muito carinho por ${remetente}</p>
+<button onclick="surpriseNext()">Abrir minha surpresa ❤️</button>
+</section>
+
+<section class="step">
+<div class="bear">🎶💗</div>
+<h2>Uma música para nós</h2>
+<p>Essa música faz parte da nossa história.</p>
+${musica||'<p>Uma trilha sonora especial para este momento ❤️</p>'}
+<button onclick="surpriseNext()">Continuar ❤️</button>
+</section>
+
+<section class="step">
+<div class="heart">💌</div>
+<h2>${titulo}</h2>
+${foto}
+<div class="letter">
+<p>${mensagem}</p>
+<div class="signature">${assinatura} ❤️</div>
+</div>
+<button onclick="surpriseNext()">Ver surpresa final 💕</button>
+</section>
+
+<section class="step">
+<div class="bear">🧸❤️🧸</div>
+<div class="heart">💖</div>
+<h2>Uma última coisa...</h2>
+<p>Você é uma pessoa muito especial. Que nunca faltem motivos para sorrir e momentos para guardar no coração.</p>
+<p>Com carinho, ${remetente}.</p>
+<button onclick="surpriseRestart()">Rever minha surpresa ↺</button>
+<p class="small">Feito com amor · Cartas de Amor</p>
+</section>
+</div>
+</div>`;
+
+let currentStep=0;
+const steps=main.querySelectorAll('.step');
+
+window.surpriseNext=function(){
+steps[currentStep].classList.remove('active');
+currentStep=Math.min(currentStep+1,steps.length-1);
+steps[currentStep].classList.add('active');
+};
+
+window.surpriseRestart=function(){
+steps[currentStep].classList.remove('active');
+currentStep=0;
+steps[currentStep].classList.add('active');
+};
 }catch(error){
-document.querySelector('main').innerHTML=
-'<section class="card"><h2>Ops! 💔</h2><p>'+String(error.message).replace(/[<>&"]/g,'')+'</p></section>';
+main.innerHTML='<div style="padding:30px;text-align:center"><h2>Ops! 💔</h2><p>'+String(error.message).replace(/[<>&"]/g,'')+'</p></div>';
 }
 }
 
-const params=new URLSearchParams(location.search);
 
 if(params.has('c')){
 loadSharedLetter(params.get('c'));
