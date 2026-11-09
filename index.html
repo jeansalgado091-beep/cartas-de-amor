@@ -352,7 +352,13 @@ async function saveLetter(){
 const from=$('from').value.trim();
 const to=$('to').value.trim();
 const message=$('message').value.trim();
-
+if(!selectedPlan){
+setStatus('Primeiro escolha um dos três planos acima. ❤️');
+document.getElementById('plans').scrollIntoView({
+behavior:'smooth'
+});
+return;
+  }
 if(!from||!to||!message){
 setStatus('Preencha seu nome, o nome de quem vai receber e a declaração.');
 return;
