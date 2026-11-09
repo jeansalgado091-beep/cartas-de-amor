@@ -100,7 +100,7 @@ button{border:0;border-radius:22px;padding:12px 17px;background:var(--pink);colo
 </div>
 </main>
 <script>
-  
+
 const SUPABASE_URL='https://jrrsqxvzpumkwrylaiuk.supabase.co';
 const SUPABASE_KEY='sb_publishable_DmSTjSN8mhWr4SsJIfrtzw_j3Ag4ZcB';
 const SITE_URL='https://jeansalgado091-beep.github.io/cartas-de-amor/';
@@ -213,7 +213,7 @@ $('pvMessage').textContent='Uma última mensagem especial para encerrar a surpre
 $('prev').onclick=()=>showPage(page-1);
 $('next').onclick=()=>showPage(page+1);
 paint();
-  
+
 async function saveLetter(){
 const from=$('from').value.trim();
 const to=$('to').value.trim();
@@ -364,6 +364,6 @@ const params=new URLSearchParams(location.search);
 if(params.has('c')){
 loadSharedLetter(params.get('c'));
 }
-  </script>
+</script>
 </body>
 </html>
