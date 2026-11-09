@@ -53,8 +53,10 @@ hr{border:0;border-top:1px solid var(--line);margin:20px 0}
 <p class="note">A pessoa poderá tocar a música ao abrir a cartinha. Use somente músicas que você tenha direito de compartilhar ou links oficiais.</p>
 <div class="actions"><button class="btn" id="refresh">Atualizar prévia</button><button class="btn soft" id="clear">Limpar</button></div>
 <hr>
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><div class="note">Preço sugerido por cartinha</div><div class="price">R$ 14,90</div></div><button class="btn" id="buy">Quero comprar</button></div>
-<p class="note" id="paymentNote">Demonstração inicial: o checkout Pix e a publicação automática ainda serão integrados. Nenhum pagamento é cobrado nesta versão.</p>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><div class="note">Preço sugerido por cartinha</div><div class="price">R$ 14,90</div></div><button class="btn" id="buy" type="button">Salvar e gerar meu link</button></div>
+<p class="note" id="paymentNote">Salve sua carta para gerar um link exclusivo. O pagamento Pix ainda não está integrado; esta etapa é gratuita e de teste.</p>
+<div id="saveStatus" class="note" role="status" aria-live="polite"></div>
+<div id="shareBox" style="display:none;margin-top:12px;padding:14px;background:#fff0f4;border-radius:12px"><strong>Seu link da carta:</strong><br><a id="shareLink" href="#" target="_blank" rel="noopener" style="overflow-wrap:anywhere"></a><div class="actions"><button class="btn soft" id="copyLink" type="button">Copiar link</button><button class="btn" id="openLink" type="button">Abrir carta</button></div></div>
 </section>
 <section>
 <div class="preview" id="preview">
@@ -68,31 +70,152 @@ hr{border:0;border-top:1px solid var(--line);margin:20px 0}
 <div class="actions" style="justify-content:center"><button class="btn soft" id="prev">← Anterior</button><button class="btn" id="next">Próxima página →</button></div>
 <p class="note" id="pageNote">Prévia ilustrativa da primeira tela.</p>
 </div>
-<p class="note" style="text-align:center">A prévia mostra o conceito. A versão final terá páginas completas, animações e link privado para compartilhar.</p>
+<p class="note" style="text-align:center">Depois de salvar, você receberá um link para compartilhar sua carta. Guarde esse link: qualquer pessoa que o tiver poderá abrir a carta.</p>
 </section>
 </div></main>
+
 <script>
-const $=id=>document.getElementById(id);let theme='rose',page=0,photoUrl='';
+const SUPABASE_URL = 'https://jrrsqxvzpumkwrylaiuk.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_DmSTjSN8mhWr4SsJIfrtzw_j3Ag4ZcB';
+const SITE_URL = 'https://jeansalgado091-beep.github.io/cartas-de-amor/';
+const $=id=>document.getElementById(id);
+let theme='rose',page=0,photoUrl='';
+
 function paint(){
-$('pvTitle').textContent=$('title').value||'Uma surpresa para você ❤️';
-$('pvNames').textContent=$('to').value?'Para '+$('to').value+($('from').value?' · Com carinho, '+$('from').value:''):'Para alguém especial';
-$('pvMessage').textContent=$('message').value||'Sua declaração vai aparecer aqui. Escreva algo do coração no formulário.';
-$('pvSign').textContent=$('sign').value||'Com amor ❤️';
-$('photoPreview').src=photoUrl;$('photoPreview').style.display=photoUrl?'block':'none';
-$('preview').style.background=theme==='night'?'linear-gradient(145deg,#30233e,#59415e)':theme==='bear'?'linear-gradient(145deg,#fff0d9,#f9dfc4)':'linear-gradient(145deg,#ffe7ef,#fff8fa)';
+  $('pvTitle').textContent=$('title').value||'Uma surpresa para você ❤️';
+  $('pvNames').textContent=$('to').value?'Para '+$('to').value+($('from').value?' · Com carinho, '+$('from').value:''):'Para alguém especial';
+  $('pvMessage').textContent=$('message').value||'Sua declaração vai aparecer aqui. Escreva algo do coração no formulário.';
+  $('pvSign').textContent=$('sign').value||'Com amor ❤️';
+  $('photoPreview').src=photoUrl;
+  $('photoPreview').style.display=photoUrl?'block':'none';
+  $('preview').style.background=theme==='night'?'linear-gradient(145deg,#30233e,#59415e)':theme==='bear'?'linear-gradient(145deg,#fff0d9,#f9dfc4)':'linear-gradient(145deg,#ffe7ef,#fff8fa)';
 }
-document.querySelectorAll('.theme').forEach(b=>b.onclick=()=>{document.querySelectorAll('.theme').forEach(x=>x.classList.remove('active'));b.classList.add('active');theme=b.dataset.theme;paint()});
-$('photo').onchange=e=>{let f=e.target.files[0];if(!f)return;if(f.size>5*1024*1024){alert('Escolha uma imagem de até 5 MB.');e.target.value='';return}let r=new FileReader();r.onload=()=>{photoUrl=r.result;paint()};r.readAsDataURL(f)};
-['from','to','title','message','sign'].forEach(id=>$(id).addEventListener('input',paint));$('refresh').onclick=paint;
-$('clear').onclick=()=>{['from','to','message','date','sign','music'].forEach(id=>$(id).value='');$('title').value='Uma surpresa para você ❤️';$('photo').value='';photoUrl='';paint()};
+document.querySelectorAll('.theme').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.theme').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');theme=b.dataset.theme;paint();
+});
+$('photo').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  if(f.size>5*1024*1024){alert('Escolha uma imagem de até 5 MB.');e.target.value='';return;}
+  const r=new FileReader();r.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const max=1200,scale=Math.min(1,max/Math.max(img.width,img.height));
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      photoUrl=canvas.toDataURL('image/jpeg',0.72);paint();
+    };
+    img.onerror=()=>{setStatus('Não foi possível processar essa foto.');};
+    img.src=r.result;
+  };r.readAsDataURL(f);
+};
+['from','to','title','message','sign'].forEach(id=>$(id).addEventListener('input',paint));
+$('refresh').onclick=paint;
+$('clear').onclick=()=>{
+  ['from','to','message','date','sign','music'].forEach(id=>$(id).value='');
+  $('title').value='Uma surpresa para você ❤️';$('photo').value='';photoUrl='';
+  $('shareBox').style.display='none';$('saveStatus').textContent='';paint();
+};
 const pageData=[
-['Uma mensagem especial · Capa',()=>paint(),'Prévia ilustrativa da primeira tela.'],
-['Uma música para vocês 🎵',()=>{$('pvTitle').textContent='Uma música para nós 🎵';$('pvMessage').textContent=$('music').value?'Seu link de música foi adicionado. Na versão final, ele ficará disponível nesta página.':'Aqui ficará a música escolhida por você.'},'Tela 2 · Música e lembranças.'],
-['Uma carta para você 💌',()=>{$('pvTitle').textContent='Uma carta para '+($('to').value||'você')+' 💌';$('pvMessage').textContent=$('message').value||'Sua declaração aparecerá aqui.'},'Tela 3 · Declaração.'],
-['Isso é só o começo ❤️',()=>{$('pvTitle').textContent='Isso é só o começo ❤️';$('pvMessage').textContent='Uma última mensagem especial para encerrar a surpresa.'},'Tela 4 · Mensagem final.']
+  ['Uma mensagem especial · Capa',()=>paint(),'Prévia ilustrativa da primeira tela.'],
+  ['Uma música para vocês 🎵',()=>{
+    $('pvTitle').textContent='Uma música para nós 🎵';
+    $('pvMessage').textContent=$('music').value?'Seu link de música foi adicionado.':'Aqui ficará a música escolhida por você.';
+  },'Tela 2 · Música e lembranças.'],
+  ['Uma carta para você 💌',()=>{
+    $('pvTitle').textContent='Uma carta para '+($('to').value||'você')+' 💌';
+    $('pvMessage').textContent=$('message').value||'Sua declaração aparecerá aqui.';
+  },'Tela 3 · Declaração.'],
+  ['Isso é só o começo ❤️',()=>{
+    $('pvTitle').textContent='Isso é só o começo ❤️';
+    $('pvMessage').textContent='Uma última mensagem especial para encerrar a surpresa.';
+  },'Tela 4 · Mensagem final.']
 ];
-function show(n){page=(n+4)%4;document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===page));$('pageLabel').textContent=pageData[page][0];pageData[page][1]();$('pageNote').textContent=pageData[page][2]}
+function show(n){
+  page=(n+4)%4;
+  document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===page));
+  $('pageLabel').textContent=pageData[page][0];pageData[page][1]();$('pageNote').textContent=pageData[page][2];
+}
 $('prev').onclick=()=>show(page-1);$('next').onclick=()=>show(page+1);
-$('buy').onclick=()=>alert('Esta versão ainda não recebe pagamentos. O próximo passo é conectar um provedor de Pix com confirmação automática e armazenamento seguro dos links.');
+
+function setStatus(message){$('saveStatus').textContent=message;}
+function safeText(value){return (value||'').toString().trim();}
+async function saveLetter(){
+  const from=safeText($('from').value), to=safeText($('to').value), message=safeText($('message').value);
+  if(!from||!to||!message){setStatus('Preencha seu nome, o nome de quem vai receber e a declaração.');return;}
+  if(message.length>8000){setStatus('Sua declaração está muito longa. Reduza o texto e tente novamente.');return;}
+  const button=$('buy');button.disabled=true;button.textContent='Salvando...';setStatus('Salvando sua carta...');
+  try{
+    const response=await fetch(SUPABASE_URL+'/rest/v1/cartas?select=codigo',{
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Content-Type':'application/json',
+        'Prefer':'return=representation'
+      },
+      body:JSON.stringify({
+        remetente:from,
+        destinatario:to,
+        titulo:safeText($('title').value)||'Uma surpresa para você ❤️',
+        declaracao:message,
+        assinatura:safeText($('sign').value),
+        tema:theme,
+        foto_url:photoUrl||null,
+        musica_url:safeText($('music').value)||null,
+        data_especial:$('date').value||null
+      })
+    });
+    const result=await response.json().catch(()=>[]);
+    if(!response.ok)throw new Error(result.message||result.details||result.hint||('Erro HTTP '+response.status));
+    if(!Array.isArray(result)||!result[0]||!result[0].codigo)throw new Error('A carta foi enviada, mas não recebemos o código. Confira a tabela no Supabase.');
+    const link=SITE_URL+'?c='+encodeURIComponent(result[0].codigo);
+    $('shareLink').href=link;$('shareLink').textContent=link;$('shareBox').style.display='block';
+    setStatus('Carta salva! Copie e guarde o link para compartilhar.');
+  }catch(err){
+    console.error(err);
+    setStatus('Não foi possível salvar: '+err.message+'. Confira se executou os comandos SQL indicados.');
+  }finally{button.disabled=false;button.textContent='Salvar e gerar meu link';}
+}
+$('buy').onclick=saveLetter;
+$('copyLink').onclick=async()=>{
+  const link=$('shareLink').href;
+  try{await navigator.clipboard.writeText(link);setStatus('Link copiado!');}
+  catch(e){setStatus('Toque e segure no link acima para copiá-lo.');}
+};
+$('openLink').onclick=()=>window.open($('shareLink').href,'_blank');
 paint();
+
+async function loadSharedLetter(code){
+  document.querySelector('main').innerHTML='<section class="card" style="max-width:720px;margin:40px auto;text-align:center"><h2>Abrindo sua carta... 💌</h2><p class="note">Só um instante.</p></section>';
+  try{
+    const response=await fetch(SUPABASE_URL+'/rest/v1/rpc/buscar_carta',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_codigo:code})
+    });
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.message||'Não foi possível abrir a carta.');
+    const c=Array.isArray(data)?data[0]:null;
+    if(!c)throw new Error('Não encontramos uma carta com esse link.');
+    const themeBg=c.tema==='night'?'linear-gradient(145deg,#30233e,#59415e)':c.tema==='bear'?'linear-gradient(145deg,#fff0d9,#f9dfc4)':'linear-gradient(145deg,#ffe7ef,#fff8fa)';
+    const safe=v=>String(v||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    document.querySelector('main').innerHTML=`
+      <section class="preview" style="position:static;max-width:760px;margin:30px auto;background:${themeBg};min-height:420px">
+        <div class="small">Uma mensagem especial</div>
+        <h3>${safe(c.titulo||'Uma surpresa para você ❤️')}</h3>
+        <div class="small">Para ${safe(c.destinatario)} · Com carinho, ${safe(c.remetente)}</div>
+        ${c.foto_url?`<img src="${c.foto_url}" alt="Foto da lembrança" style="display:block;max-width:100%;max-height:320px;object-fit:contain;border-radius:14px;margin:18px auto">`:''}
+        <p>${safe(c.declaracao).replace(/\n/g,'<br>')}</p>
+        ${c.assinatura?`<div class="signature">${safe(c.assinatura)}</div>`:''}
+        ${c.musica_url?`<p><a href="${safe(c.musica_url)}" target="_blank" rel="noopener">🎵 Ouvir a música escolhida</a></p>`:''}
+        <p class="note">Feito com carinho · Cartas de Amor</p>
+      </section>`;
+  }catch(err){
+    document.querySelector('main').innerHTML='<section class="card" style="max-width:720px;margin:40px auto;text-align:center"><h2>Ops! 💔</h2><p>'+String(err.message).replace(/[<>&"]/g,'')+'</p><p class="note">Confira se o link está completo e tente novamente.</p></section>';
+  }
+}
+const params=new URLSearchParams(location.search);
+if(params.has('c'))loadSharedLetter(params.get('c'));
 </script></body></html>
