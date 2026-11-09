@@ -322,6 +322,32 @@ $('prev').onclick=()=>showPage(page-1);
 $('next').onclick=()=>showPage(page+1);
 paint();
 
+let selectedPlan = '';
+let selectedPrice = '';
+
+function choosePlan(plan) {
+  const plans = {
+    simples: { name: 'Simples', price: 'R$ 9,90' },
+    especial: { name: 'Especial', price: 'R$ 14,90' },
+    premium: { name: 'Premium', price: 'R$ 24,90' }
+  };
+
+  selectedPlan = plan;
+  selectedPrice = plans[plan].price;
+
+  document.getElementById('buy').textContent =
+    'Continuar com ' + plans[plan].name;
+
+  document.getElementById('status').textContent =
+    'Plano escolhido: ' + plans[plan].name +
+    ' — ' + selectedPrice;
+
+  document.getElementById('formCard').scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+}
+  
 async function saveLetter(){
 const from=$('from').value.trim();
 const to=$('to').value.trim();
