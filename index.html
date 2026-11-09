@@ -439,6 +439,8 @@ main.innerHTML='<div style="padding:30px;text-align:center"><h2>Ops! 💔</h2><p
 }
 
 
+const params=new URLSearchParams(window.location.search);
+
 if(params.has('c')){
 loadSharedLetter(params.get('c'));
 }
