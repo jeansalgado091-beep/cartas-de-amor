@@ -376,6 +376,63 @@ style.textContent=`
 `;
 document.head.appendChild(style);
 
+const extraStyle=document.createElement('style');
+
+extraStyle.textContent=`
+.surprise{
+background:
+linear-gradient(135deg,rgba(91,20,49,.55),rgba(232,93,134,.35)),
+url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200') center/cover fixed;
+min-height:100vh;
+padding:30px 14px;
+}
+
+.surprise-card{
+background:rgba(255,250,252,.94);
+backdrop-filter:blur(10px);
+border:2px solid #f4c7d6;
+box-shadow:0 15px 45px rgba(80,20,45,.25);
+}
+
+.surprise h2{
+text-shadow:0 2px 8px #f7dce5;
+}
+
+.surprise button{
+background:linear-gradient(135deg,#a52e5b,#e85d86);
+box-shadow:0 5px 15px #a52e5b40;
+transition:transform .2s;
+}
+
+.surprise button:hover{
+transform:scale(1.05);
+}
+
+.surprise .bear{
+animation:flutuar 3s ease-in-out infinite;
+}
+
+.surprise .heart{
+animation:pulsar 1.5s infinite;
+}
+
+.surprise .letter{
+border:1px solid #f1c7d6;
+box-shadow:0 5px 20px #a52e5b12;
+}
+
+@keyframes flutuar{
+0%,100%{transform:translateY(0)}
+50%{transform:translateY(-9px)}
+}
+
+@keyframes pulsar{
+50%{transform:scale(1.12)}
+}
+`;
+
+document.head.appendChild(extraStyle);
+
 main.innerHTML=`
 <div class="surprise">
 <div class="surprise-card">
