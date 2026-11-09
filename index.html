@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartas de Amor ❤️</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Georgia,serif;background:#fff7f8;color:#492d37}
+header{text-align:center;padding:35px 15px;background:#7d263f;color:white}
+header h1{font-size:32px;margin:5px}
+header p{margin:10px}
+main{max-width:650px;margin:25px auto;padding:20px}
+h2{text-align:center;color:#922f50}
+.card{background:white;padding:22px;border-radius:18px;box-shadow:0 4px 20px #0001;margin-bottom:20px}
+label{display:block;margin:15px 0 6px;font-weight:bold}
+input,textarea,select{width:100%;padding:13px;border:1px solid #e6cbd3;border-radius:9px;font-size:16px;background:#fffafb}
+textarea{min-height:100px;resize:vertical}
+button{width:100%;padding:15px;border:0;border-radius:10px;background:#922f50;color:white;font-size:17px;font-weight:bold;margin-top:18px}
+button:active{opacity:.8}
+#resultado{display:none;white-space:pre-wrap;line-height:1.8;background:#fff9ed;border:2px solid #e6c8a9;padding:25px;border-radius:12px;margin-top:20px}
+footer{text-align:center;padding:25px;color:#966c79}
+</style>
+</head>
+<body>
+<header>
+<div style="font-size:35px">💌</div>
+<h1>Cartas de Amor</h1>
+<p>Transforme seus sentimentos em palavras inesquecíveis.</p>
+</header>
+
+<main>
+<div class="card">
+<h2>Crie sua declaração ❤️</h2>
+<p>Conte um pouco da sua história e prepare uma mensagem especial.</p>
+
+<label>Seu nome</label>
+<input id="autor" placeholder="Como você se chama?">
+
+<label>Nome de quem vai receber</label>
+<input id="destino" placeholder="Nome da pessoa amada">
+
+<label>Qual é a ocasião?</label>
+<select id="ocasiao">
+<option>Uma declaração de amor</option>
+<option>Aniversário de namoro</option>
+<option>Pedido de namoro</option>
+<option>Pedido de casamento</option>
+<option>Pedido de desculpas</option>
+<option>Surpresa romântica</option>
+</select>
+
+<label>Estilo da carta</label>
+<select id="estilo">
+<option>Romântica e emocionante</option>
+<option>Poética e delicada</option>
+<option>Intensa e apaixonada</option>
+<option>Simples e sincera</option>
+</select>
+
+<label>Conte uma lembrança especial</label>
+<textarea id="lembranca" placeholder="Conte como vocês se conheceram, um momento inesquecível..."></textarea>
+
+<label>O que você mais ama nessa pessoa?</label>
+<textarea id="qualidade" placeholder="O sorriso, o carinho, o jeito de ser..."></textarea>
+
+<button onclick="gerar()">Criar minha carta 💗</button>
+</div>
+
+<div class="card" id="area">
+<h2>Sua carta especial</h2>
+<div id="resultado"></div>
+<button id="imprimir" style="display:none" onclick="window.print()">Salvar ou imprimir PDF 📄</button>
+</div>
+</main>
+
+<footer>
+Feito com amor ❤️<br>
+Cartas de Amor © 2026
+</footer>
+
+<script>
+function gerar(){
+const autor=document.getElementById('autor').value.trim();
+const destino=document.getElementById('destino').value.trim();
+const ocasiao=document.getElementById('ocasiao').value;
+const estilo=document.getElementById('estilo').value;
+const lembranca=document.getElementById('lembranca').value.trim();
+const qualidade=document.getElementById('qualidade').value.trim();
+
+if(!autor||!destino){
+alert('Preencha seu nome e o nome da pessoa amada!');
+return;
+}
+
+let inicio=estilo.includes('Poética')
+?'Existem sentimentos que as palavras mal conseguem explicar. Mas hoje quero tentar...'
+:estilo.includes('Intensa')
+?'Meu amor, hoje quero abrir meu coração e dizer tudo aquilo que sinto...'
+:estilo.includes('Simples')
+?'Quero te escrever algumas palavras sinceras, diretamente do meu coração...'
+:'Às vezes, fico pensando em como uma pessoa pode transformar completamente a nossa vida...';
+
+let carta=`Para ${destino},
+
+${inicio}
+
+Hoje, por ocasião de ${ocasiao.toLowerCase()}, quero que você saiba o quanto é especial para mim.
+
+${lembranca ? 'Nunca vou esquecer: '+lembranca+'. Esse momento ficará guardado no meu coração.' : 'Cada momento ao seu lado tem um significado especial para mim.'}
+
+${qualidade ? 'Uma das coisas que mais admiro em você é '+qualidade+'.' : 'Admiro seu jeito de ser e a felicidade que você traz para os meus dias.'}
+
+Quero continuar construindo lembranças, dividindo sonhos e vivendo momentos especiais ao seu lado.
+
+Que nunca nos faltem carinho, respeito, companheirismo e motivos para sorrir.
+
+Com todo meu carinho,
+
+${autor} ❤️`;
+
+const resultado=document.getElementById('resultado');
+resultado.textContent=carta;
+resultado.style.display='block';
+document.getElementById('imprimir').style.display='block';
+document.getElementById('area').scrollIntoView({behavior:'smooth'});
+}
+</script>
+
+<style>
+@media print{
+body{background:white}
+header,main>.card:first-child,footer,#imprimir{display:none!important}
+main{margin:0;padding:0}
+#area{box-shadow:none;border:0}
+#resultado{display:block!important;border:0;background:white;font-size:18px}
+}
+</style>
+</body>
+</html>
