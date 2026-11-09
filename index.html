@@ -477,23 +477,45 @@ ${foto}
 </div>`;
 
 let currentStep=0;
+
 const steps=main.querySelectorAll('.step');
+
+const loveMessages=[
+'Eu te amo mais do que palavras conseguem explicar. ❤️',
+'Você é uma das melhores coisas que aconteceram na minha vida.',
+'Meu lugar favorito sempre será ao seu lado. 💕',
+'Seu sorriso deixa meus dias mais felizes.',
+'Eu escolheria você mil vezes, em todas as vidas.',
+'Você é especial para mim de um jeito que ninguém consegue ser.',
+'Obrigado por fazer parte da minha história. 🌹',
+'Meu coração fica feliz só de ter você.'
+];
+
+const loveBox=document.createElement('div');
+loveBox.style.cssText='margin-top:22px;padding:15px;background:#fff0f5;border-radius:15px;color:#a83f65;font-size:17px;font-style:italic;line-height:1.6;transition:opacity .4s';
+loveBox.textContent=loveMessages[0];
+
+main.querySelector('.surprise-card').appendChild(loveBox);
+
+let loveIndex=0;
 
 window.surpriseNext=function(){
 steps[currentStep].classList.remove('active');
 currentStep=Math.min(currentStep+1,steps.length-1);
 steps[currentStep].classList.add('active');
+
+loveIndex=(loveIndex+1)%loveMessages.length;
+loveBox.textContent=loveMessages[loveIndex];
 };
 
 window.surpriseRestart=function(){
 steps[currentStep].classList.remove('active');
 currentStep=0;
 steps[currentStep].classList.add('active');
+loveIndex=0;
+loveBox.textContent=loveMessages[0];
 };
-}catch(error){
-main.innerHTML='<div style="padding:30px;text-align:center"><h2>Ops! 💔</h2><p>'+String(error.message).replace(/[<>&"]/g,'')+'</p></div>';
-}
-}
+
 
 
 const params=new URLSearchParams(window.location.search);
