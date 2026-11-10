@@ -289,24 +289,20 @@ img.src=reader.result;
 reader.readAsDataURL(file);
 };
 $('gallery').onchange = e => {
-  const files = Array.from(e.target.files);
-  const preview = $('galleryPreview');
-
+document.getElementById('gallery').addEventListener('change', function() {
+  const preview = document.getElementById('galleryPreview');
   preview.innerHTML = '';
 
+  const files = Array.from(this.files);
+
   if (files.length > 5) {
-    setStatus('Você pode escolher no máximo 5 fotos.');
-    e.target.value = '';
+    alert('Escolha no máximo 5 fotos.');
+    this.value = '';
     return;
   }
 
-  for (const file of files) {
-    if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
-      setStatus('Cada foto deve ser uma imagem de até 5 MB.');
-      e.target.value = '';
-      preview.innerHTML = '';
-      return;
-    }
+  files.forEach(file => {
+    if (!file.type.startsWith('image/')) return;
 
     const img = document.createElement('img');
     img.src = URL.createObjectURL(file);
@@ -317,10 +313,8 @@ $('gallery').onchange = e => {
     img.style.margin = '5px';
 
     preview.appendChild(img);
-  }
-
-  setStatus(files.length + ' foto(s) selecionada(s)! ❤️');
-};
+  });
+});
 $('clear').onclick=()=>{
 ['from','to','message','date','sign','music','photo'].forEach(id=>$(id).value='');
 $('title').value='Uma surpresa para você ❤️';
