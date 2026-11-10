@@ -318,7 +318,9 @@ $('gallery').onchange = e => {
   }
 };
 $('clear').onclick=()=>{
-['from','to','message','date','sign','music','photo'].forEach(id=>$(id).value='');
+['from','to','message','date','sign','music','photo','gallery'].forEach(id=>$(id).value='');
+
+$('galleryPreview').innerHTML='';
 $('title').value='Uma surpresa para você ❤️';
 photoUrl='';
 theme='rose';
