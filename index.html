@@ -288,7 +288,39 @@ img.src=reader.result;
 };
 reader.readAsDataURL(file);
 };
+$('gallery').onchange = e => {
+  const files = Array.from(e.target.files);
+  const preview = $('galleryPreview');
 
+  preview.innerHTML = '';
+
+  if (files.length > 5) {
+    setStatus('Você pode escolher no máximo 5 fotos.');
+    e.target.value = '';
+    return;
+  }
+
+  for (const file of files) {
+    if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+      setStatus('Cada foto deve ser uma imagem de até 5 MB.');
+      e.target.value = '';
+      preview.innerHTML = '';
+      return;
+    }
+
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.style.width = '85px';
+    img.style.height = '85px';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '10px';
+    img.style.margin = '5px';
+
+    preview.appendChild(img);
+  }
+
+  setStatus(files.length + ' foto(s) selecionada(s)! ❤️');
+};
 $('clear').onclick=()=>{
 ['from','to','message','date','sign','music','photo'].forEach(id=>$(id).value='');
 $('title').value='Uma surpresa para você ❤️';
