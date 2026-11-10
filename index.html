@@ -520,7 +520,16 @@ const mensagem=safe(c.declaracao||'').replace(/\n/g,'<br>');
 const assinatura=safe(c.assinatura||remetente);
 const plano = c.plano || 'simples';
 const foto=c.foto_url?`<img class="foto" src="${safe(c.foto_url)}" alt="Nossa foto">`:'';
+const galeria = plano === 'premium' && Array.isArray(c.galeria_urls)
+  ? c.galeria_urls
+      .filter(url => typeof url === 'string' && url.startsWith(SUPABASE_URL + '/storage/v1/object/public/galeria-cartas/'))
+      .map((url, i) => `<img class="foto" src="${safe(url)}" alt="Foto especial ${i + 1}">`)
+      .join('')
+  : '';
 
+const galeriaHTML = galeria
+  ? `<div class="galeria-premium"><h3>Nossas lembranças ❤️</h3>${galeria}</div>`
+  : '';
 let musica='';
 const musicUrl=String(c.musica_url||'').trim();
 
