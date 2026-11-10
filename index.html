@@ -544,7 +544,6 @@ const response=await fetch(
 );
 
 const data=await response.json();
-const data=await response.json();
 if(!response.ok)throw new Error(data.message||'Erro ao abrir carta.');
 
 const c=Array.isArray(data)?data[0]:null;
