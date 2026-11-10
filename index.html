@@ -404,7 +404,19 @@ premium.style.display =
 }
   async function uploadGalleryPhotos(files) {
   const urls = [];
+if (files.length > 5) {
+  throw new Error('Escolha no máximo 5 fotos.');
+}
 
+for (const file of files) {
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error('Cada foto deve ter no máximo 5 MB.');
+  }
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    throw new Error('Use apenas fotos JPG, PNG ou WEBP.');
+  }
+}
   for (const file of files) {
     const extension = file.name.split('.').pop().toLowerCase();
     const path = crypto.randomUUID() + '.' + extension;
