@@ -487,22 +487,21 @@ $('open').onclick=()=>window.open($('link').href,'_blank');
 async function loadSharedLetter(code){
 const main=document.querySelector('main');
 main.innerHTML='<div style="text-align:center;padding:50px">Preparando sua surpresa... ❤️</div>';
-
 try{
-let galleryUrls = [];
-
-if (selectedPlan === 'premium') {
-  const files = Array.from($('gallery').files);
-
-  if (files.length > 5) {
-    throw new Error('Escolha no máximo 5 fotos.');
-  }
-
-  galleryUrls = await uploadGalleryPhotos(files);
-}
-
 const response=await fetch(
+  SUPABASE_URL+'/rest/v1/rpc/buscar_carta',
+  {
+    method:'POST',
+    headers:{
+      'apikey':SUPABASE_KEY,
+      'Authorization':'Bearer '+SUPABASE_KEY,
+      'Content-Type':'application/json'
+    },
+    body:JSON.stringify({p_codigo:code})
+  }
+);
 
+const data=await response.json();
 const data=await response.json();
 if(!response.ok)throw new Error(data.message||'Erro ao abrir carta.');
 
