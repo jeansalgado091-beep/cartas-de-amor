@@ -335,8 +335,15 @@ function choosePlan(plan) {
     premium: { name: 'Premium', price: 'R$ 24,90' }
   };
 
+  if (!plans[plan]) return;
+
   selectedPlan = plan;
   selectedPrice = plans[plan].price;
+
+  const recursos = document.getElementById('recursosEspeciais');
+
+  recursos.style.display =
+    plan === 'simples' ? 'none' : 'block';
 
   document.getElementById('buy').textContent =
     'Continuar com ' + plans[plan].name;
