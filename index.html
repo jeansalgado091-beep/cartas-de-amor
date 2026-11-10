@@ -608,7 +608,10 @@ main.innerHTML='<div style="text-align:center;padding:40px"><h2>Ops! ❤️</h2>
 }
 
 const params=new URLSearchParams(window.location.search);
-if(params.has('c'))loadSharedLetter(params.get('c'));
+if (params.has('c')) {
+  document.querySelector('.container').style.display = 'none';
+  loadSharedLetter(params.get('c'));
+}
 </script>
 </body>
 </html>
