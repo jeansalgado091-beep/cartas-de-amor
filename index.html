@@ -395,7 +395,38 @@ premium.style.display =
     block: 'start'
   });
 }
-  
+  async function uploadGalleryPhotos(files) {
+  const urls = [];
+
+  for (const file of files) {
+    const extension = file.name.split('.').pop().toLowerCase();
+    const path = crypto.randomUUID() + '.' + extension;
+
+    const response = await fetch(
+      SUPABASE_URL + '/storage/v1/object/galeria-cartas/' + path,
+      {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': file.type,
+          'x-upsert': 'false'
+        },
+        body: file
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Não foi possível enviar uma das fotos.');
+    }
+
+    urls.push(
+      SUPABASE_URL + '/storage/v1/object/public/galeria-cartas/' + path
+    );
+  }
+
+  return urls;
+  }
 async function saveLetter(){
 const from=$('from').value.trim();
 const to=$('to').value.trim();
