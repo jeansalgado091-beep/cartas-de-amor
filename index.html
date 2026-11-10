@@ -451,6 +451,7 @@ for (const file of files) {
 async function saveLetter(){
 const from=$('from').value.trim();
 const to=$('to').value.trim();
+  const email=$('email').value.trim();
 const message=$('message').value.trim();
 if(!selectedPlan){
 setStatus('Primeiro escolha um dos três planos acima. ❤️');
