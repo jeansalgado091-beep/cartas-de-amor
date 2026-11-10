@@ -511,6 +511,7 @@ const nome=safe(c.destinatario||'Meu amor');
 const remetente=safe(c.remetente||'Alguém especial');
 const mensagem=safe(c.declaracao||'').replace(/\n/g,'<br>');
 const assinatura=safe(c.assinatura||remetente);
+const plano = c.plano || 'simples';
 const foto=c.foto_url?`<img class="foto" src="${safe(c.foto_url)}" alt="Nossa foto">`:'';
 
 let musica='';
