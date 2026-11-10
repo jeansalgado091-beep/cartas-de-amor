@@ -372,7 +372,8 @@ paint();
 let selectedPlan = '';
 let selectedPrice = '';
 
-function choosePlan(plan) {
+function choosePlan(plan) {document.getElementById('recursosEspeciais').style.display = 'none';
+document.getElementById('recursosPremium').style.display = 'none';
   const plans = {
     simples: { name: 'Simples', price: 'R$ 9,90' },
     especial: { name: 'Especial', price: 'R$ 14,90' },
