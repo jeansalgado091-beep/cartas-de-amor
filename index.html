@@ -350,7 +350,10 @@ function choosePlan(plan) {
 
   recursos.style.display =
     plan === 'simples' ? 'none' : 'block';
+const premium = document.getElementById('recursosPremium');
 
+premium.style.display =
+  plan === 'premium' ? 'block' : 'none';
   document.getElementById('buy').textContent =
     'Continuar com ' + plans[plan].name;
 
