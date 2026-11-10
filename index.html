@@ -468,9 +468,6 @@ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
 setStatus('Digite um e-mail válido.');
 return;
 }
-setStatus('Preencha seu nome, o nome de quem vai receber e a declaração.');
-return;
-}
 if(message.length>8000){
 setStatus('Sua declaração está muito longa. Reduza o texto.');
 return;
