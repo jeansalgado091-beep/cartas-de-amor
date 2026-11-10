@@ -460,7 +460,14 @@ behavior:'smooth'
 });
 return;
   }
-if(!from||!to||!message){
+if(!from||!to||!message||!email){
+setStatus('Preencha seu e-mail, seu nome, o nome de quem vai receber e a declaração.');
+return;
+}
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+setStatus('Digite um e-mail válido.');
+return;
+}
 setStatus('Preencha seu nome, o nome de quem vai receber e a declaração.');
 return;
 }
