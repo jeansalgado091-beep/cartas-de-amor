@@ -453,6 +453,17 @@ button.textContent='Salvando...';
 setStatus('Salvando sua carta...');
 
 try{
+  let galleryUrls = [];
+
+if (selectedPlan === 'premium') {
+  const files = Array.from($('gallery').files);
+
+  if (files.length > 5) {
+    throw new Error('Escolha no máximo 5 fotos.');
+  }
+
+  galleryUrls = await uploadGalleryPhotos(files);
+}
 const response=await fetch(SUPABASE_URL+'/rest/v1/rpc/criar_carta',{
 method:'POST',
 headers:{
