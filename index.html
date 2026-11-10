@@ -234,8 +234,6 @@ let page=0;
 let photoUrl='';
 
 function setStatus(msg){$('status').textContent=msg;}
-
-
 function paint(){
 $('pvTitle').textContent=$('title').value||'Uma surpresa para você ❤️';
 $('pvNames').textContent=$('to').value?
@@ -568,6 +566,15 @@ const remetente=safe(c.remetente||'Alguém especial');
 const mensagem=safe(c.declaracao||'').replace(/\n/g,'<br>');
 const assinatura=safe(c.assinatura||remetente);
 const plano = c.plano || 'simples';
+ const tema = c.tema || 'bear';
+
+const temaCores = {
+  rose: 'linear-gradient(145deg,#ffe7ef,#fff8fa)',
+  night: 'linear-gradient(145deg,#30233e,#59415e)',
+  bear: 'linear-gradient(145deg,#fff0d9,#f9dfc4)'
+};
+
+const corTema = temaCores[tema] || temaCores.bear; 
 const foto=c.foto_url?`<img class="foto" src="${safe(c.foto_url)}" alt="Nossa foto">`:'';
 const galeria = plano === 'premium' && Array.isArray(c.galeria_urls)
   ? c.galeria_urls
@@ -625,8 +632,7 @@ document.head.appendChild(style);
 
 main.innerHTML=`
 <div class="surprise">
-<div class="surprise-card">
-
+<div class="surprise-card" style="background:${corTema}">
 <section class="step active">
 <div class="bear">🧸💕🧸</div>
 <div class="heart">💌</div>
